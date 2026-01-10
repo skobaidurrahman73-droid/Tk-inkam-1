@@ -21,7 +21,7 @@
 
 <div id="auth">
     <div class="card">
-        <h2 style="color:var(--p)">স্বাগতম ওবায়দুর!</h2>
+        <h2 style="color:var(--p)">স্বাগতম!</h2>
         <div id="login-form">
             <input id="ph" type="number" placeholder="ফোন নম্বর">
             <input id="ps" type="password" placeholder="পাসওয়ার্ড">
@@ -57,10 +57,10 @@
     function signup() {
         let p = document.getElementById('ph').value, s = document.getElementById('ps').value;
         if(p.length >= 11 && s.length >= 6) {
-            db.ref('users/'+p).set({name: "User-"+p, pass: s, balance: 0})
+            db.ref('users/'+p).set({name: "User-"+p.slice(-4), pass: s, balance: 0})
             .then(() => alert("রেজিস্ট্রেশন সফল! এখন লগইন করুন।"))
             .catch(() => alert("ফায়ারবেস Rules ঠিক করো!"));
-        } else alert("সঠিক তথ্য দিন!");
+        } else alert("সঠিক তথ্য দিন (নম্বর ১১ এবং পাসওয়ার্ড ৬ ডিজিট)!");
     }
 
     function login() {
