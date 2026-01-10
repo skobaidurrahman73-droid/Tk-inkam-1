@@ -3,44 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Pro Max</title>
+    <title>Earn Cash Pro</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --p: #E2136E; --bg: #f8f9fa; }
-        body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; text-align: center; }
-        .nav { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; }
-        .card { background: white; margin: 20px; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: var(--p); color: white; font-weight: bold; cursor: pointer; }
-        .btn:disabled { background: #ccc; }
-        #app { display: none; }
+        :root { --p: #6c5ce7; --s: #a29bfe; --bg: #f0f3f7; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; }
+        .nav { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card { background: white; margin: 15px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        input { width: 90%; padding: 12px; margin: 8px 0; border: 1.5px solid #eee; border-radius: 12px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--p); }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: var(--p); color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3); }
+        .btn:disabled { background: #b2bec3; box-shadow: none; }
+        .prog-container { width: 100%; background: #eee; height: 8px; border-radius: 10px; margin: 15px 0; display: none; }
+        #prog-bar { height: 100%; background: var(--p); width: 0%; border-radius: 10px; transition: 0.1s; }
     </style>
 </head>
 <body>
 
 <div id="auth">
-    <div class="card">
-        <h2 style="color:var(--p)">স্বাগতম!</h2>
-        <div id="login-form">
-            <input id="ph" type="number" placeholder="ফোন নম্বর">
-            <input id="ps" type="password" placeholder="পাসওয়ার্ড">
-            <button class="btn" onclick="login()">লগইন</button>
-            <button class="btn" onclick="signup()" style="background:#333; margin-top:10px;">রেজিস্ট্রেশন</button>
+    <div class="card" style="margin-top: 50px;">
+        <h2 style="color: var(--p); margin-bottom: 5px;">Earn Cash Pro</h2>
+        <p style="color: #636e72; font-size: 14px; margin-bottom: 20px;">নিরাপদ রেজিস্ট্রেশন সিস্টেম</p>
+        
+        <div id="reg-box">
+            <input id="r-name" type="text" placeholder="পূর্ণ নাম">
+            <input id="r-ph" type="number" placeholder="ফোন নম্বর (১১ ডিজিট)">
+            <input id="r-ps" type="password" placeholder="নতুন পাসওয়ার্ড (৬+ ডিজিট)">
+            <button class="btn" onclick="signup()">একাউন্ট তৈরি করুন</button>
+            <p onclick="toggle()" style="color:var(--p); cursor:pointer; font-size:14px;">ইতোমধ্যে একাউন্ট আছে? লগইন</p>
+        </div>
+
+        <div id="login-box" style="display:none">
+            <input id="l-ph" type="number" placeholder="ফোন নম্বর">
+            <input id="l-ps" type="password" placeholder="পাসওয়ার্ড">
+            <button class="btn" onclick="login()">লগইন করুন</button>
+            <p onclick="toggle()" style="color:var(--p); cursor:pointer; font-size:14px;">নতুন একাউন্ট খুলুন</p>
         </div>
     </div>
 </div>
 
-<div id="app">
+<div id="app" style="display:none">
     <div class="nav">
-        <span id="uName">ইউজার</span>
-        <span id="uBal">৳ ০.০০</span>
+        <b style="color: var(--p);"><i class="fas fa-coins"></i> ব্যালেন্স: <span id="uBal">৳ ০.০০</span></b>
+        <span id="uName" style="font-size: 13px; color: #636e72;">ইউজার</span>
     </div>
-    <div class="card">
-        <h3 id="timer">টাস্ক শুরু করুন</h3>
-        <button id="adBtn" class="btn" onclick="watchAd()">বিজ্ঞাপন দেখুন (৳৪.৯০)</button>
+
+    <div class="card" style="text-align: center;">
+        <i class="fas fa-play-circle" style="font-size: 50px; color: var(--p);"></i>
+        <h3>ডেইলি ভিডিও টাস্ক</h3>
+        <p id="timer" style="font-size: 14px; color: #636e72;">অ্যাড দেখে ইনকাম শুরু করুন</p>
+        
+        <div class="prog-container" id="p-con">
+            <div id="prog-bar"></div>
+        </div>
+        
+        <button id="adBtn" class="btn" onclick="watchAd()">টাস্ক শুরু (৳৪.৯০)</button>
     </div>
-    <button onclick="logout()" style="background:#444; width:50%; margin-top:20px; border:none; color:white; padding:10px; border-radius:10px;">লগআউট</button>
+
+    <center><button onclick="logout()" style="background:#ff7675; width:40%; margin-top:20px;" class="btn">লগআউট</button></center>
 </div>
 
 <script>
@@ -55,21 +77,24 @@
     const db = firebase.database();
 
     function signup() {
-        let p = document.getElementById('ph').value, s = document.getElementById('ps').value;
-        if(p.length >= 11 && s.length >= 6) {
-            db.ref('users/'+p).set({name: "User-"+p.slice(-4), pass: s, balance: 0})
-            .then(() => alert("রেজিস্ট্রেশন সফল! এখন লগইন করুন।"))
-            .catch(() => alert("ফায়ারবেস Rules ঠিক করো!"));
-        } else alert("সঠিক তথ্য দিন (নম্বর ১১ এবং পাসওয়ার্ড ৬ ডিজিট)!");
+        let n = document.getElementById('r-name').value, p = document.getElementById('r-ph').value, s = document.getElementById('r-ps').value;
+        if(n && p.length >= 11 && s.length >= 6) {
+            db.ref('users/'+p).once('value', snap => {
+                if(snap.exists()) return alert("এই নম্বর দিয়ে একাউন্ট আছে!");
+                db.ref('users/'+p).set({name: n, pass: s, balance: 0, date: new Date().toLocaleDateString()}).then(() => {
+                    alert("সফল! লগইন করুন।"); toggle();
+                });
+            });
+        } else alert("সঠিক তথ্য দিন!");
     }
 
     function login() {
-        let p = document.getElementById('ph').value, s = document.getElementById('ps').value;
+        let p = document.getElementById('l-ph').value, s = document.getElementById('l-ps').value;
         db.ref('users/'+p).once('value', snap => {
             if(snap.exists() && snap.val().pass == s) {
                 localStorage.setItem('user', p);
                 location.reload();
-            } else alert("ভুল নম্বর বা পাসওয়ার্ড!");
+            } else alert("ভুল তথ্য!");
         });
     }
 
@@ -88,22 +113,31 @@
 
     function watchAd() {
         window.open("https://www.effectivegatecpm.com/w6arakqmr0?key=cfe5b3bf60645ca848c57f56fdc4be23", "_blank");
-        let btn = document.getElementById('adBtn'), t = document.getElementById('timer');
-        btn.disabled = true;
-        let count = 5;
+        let btn = document.getElementById('adBtn'), t = document.getElementById('timer'), bar = document.getElementById('prog-bar'), con = document.getElementById('p-con');
+        btn.disabled = true; con.style.display = 'block';
+        let count = 0, total = 7; 
         let itv = setInterval(() => {
-            count--; t.innerText = "অপেক্ষা করুন: " + count + "s";
-            if(count <= 0) {
+            count++;
+            let per = (count/total)*100;
+            bar.style.width = per + "%";
+            t.innerText = "অপেক্ষা করুন: " + (total - count) + "s";
+            if(count >= total) {
                 clearInterval(itv);
                 db.ref('users/'+user).once('value', s => {
-                    let b = (s.val().balance || 0) + 4.90;
-                    db.ref('users/'+user).update({balance: b}).then(() => {
-                        alert("৳৪.৯০ যোগ হয়েছে!");
-                        btn.disabled = false; t.innerText = "টাস্ক শুরু করুন";
+                    let newBal = (s.val().balance || 0) + 4.90;
+                    db.ref('users/'+user).update({balance: newBal}).then(() => {
+                        alert("৳৪.৯০ নিরাপদভাবে যোগ হয়েছে!");
+                        btn.disabled = false; con.style.display = 'none'; bar.style.width = "0%"; t.innerText = "অ্যাড দেখে ইনকাম শুরু করুন";
                     });
                 });
             }
         }, 1000);
+    }
+
+    function toggle() {
+        let r = document.getElementById('reg-box'), l = document.getElementById('login-box');
+        r.style.display = r.style.display === 'none' ? 'block' : 'none';
+        l.style.display = l.style.display === 'none' ? 'block' : 'none';
     }
     function logout() { localStorage.clear(); location.reload(); }
 </script>
