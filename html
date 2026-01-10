@@ -3,51 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Earn Pro Max - Secure Reg</title>
+    <title>Earn Pro Max - Official</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        :root { --p: #E2136E; --bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Arial; background: var(--bg); margin: 0; }
-        .card { background: white; margin: 20px; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
-        .input-group { position: relative; width: 100%; margin: 10px 0; }
-        input { width: 90%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; }
-        .toggle-pass { position: absolute; right: 25px; top: 15px; cursor: pointer; color: #888; }
-        button { background: var(--p); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .terms { font-size: 12px; color: #666; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        :root { --p: #E2136E; --s: #ff4d94; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', Arial; background: var(--bg); margin: 0; user-select: none; }
+        
+        /* Navigation */
+        .nav { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .bal-chip { background: rgba(255,255,255,0.2); padding: 3px 12px; border-radius: 20px; font-weight: bold; }
+
+        /* Cards and Inputs */
+        .card { background: white; margin: 15px; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        input, select { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; outline: none; font-size: 16px; }
+        
+        /* Buttons */
+        .btn { background: linear-gradient(45deg, var(--p), var(--s)); color: white; border: none; padding: 14px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        /* Utils */
+        .t-center { text-align: center; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
+        .pending { color: orange; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="auth">
-    <div class="card" id="reg-box">
-        <h2 style="color: var(--p);">একাউন্ট তৈরি করুন</h2>
-        
-        <div class="input-group">
+<div id="auth-page">
+    <div class="card">
+        <h2 style="color: var(--p);">Earn Pro Max</h2>
+        <div id="login-box">
+            <input id="l-ph" type="number" placeholder="ফোন নম্বর">
+            <input id="l-ps" type="password" placeholder="পাসওয়ার্ড">
+            <button class="btn" onclick="login()">লগইন করুন</button>
+            <p onclick="toggleBox()" style="cursor:pointer; color:var(--p); margin-top:15px;">নতুন একাউন্ট খুলুন</p>
+        </div>
+        <div id="reg-box" style="display:none;">
             <input id="r-name" type="text" placeholder="পূর্ণ নাম">
+            <input id="r-ph" type="number" placeholder="ফোন নম্বর">
+            <input id="r-ps" type="password" placeholder="পাসওয়ার্ড (৬+ ডিজিট)">
+            <input id="r-ref" type="number" placeholder="রেফার কোড (ঐচ্ছিক)">
+            <button class="btn" onclick="signup()">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+            <p onclick="toggleBox()" style="cursor:pointer; color:var(--p); margin-top:15px;">লগইন করুন</p>
         </div>
-        
-        <div class="input-group">
-            <input id="r-ph" type="number" placeholder="সঠিক ফোন নম্বর (১১ ডিজিট)">
-        </div>
-        
-        <div class="input-group">
-            <input id="r-ps" type="password" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ ডিজিট)">
-            <i class="fas fa-eye toggle-pass" onclick="togglePass()"></i>
-        </div>
-
-        <div class="terms">
-            <input type="checkbox" id="agree" style="width: auto;"> আমি সব নিয়ম মেনে নিচ্ছি
-        </div>
-
-        <button onclick="signup()">রেজিস্ট্রেশন সম্পন্ন করুন</button>
-        <p style="font-size: 14px;">ইতোমধ্যে একাউন্ট আছে? <a href="#" style="color: var(--p);">লগইন</a></p>
     </div>
 </div>
 
+<div id="app-page" style="display:none;">
+    <div class="nav">
+        <span id="display-name">ইউজার</span>
+        <span class="bal-chip" id="display-bal">৳ ০.০০</span>
+    </div>
+
+    <div class="card">
+        <i class="fas fa-video" style="font-size: 40px; color: var(--p);"></i>
+        <h3>ডেইলি ভিডিও টাস্ক</h3>
+        <p id="timer-txt" style="font-weight: bold; color: var(--p);">Ready</p>
+        <button id="adBtn" class="btn" onclick="watchAd()">বিজ্ঞাপন দেখুন (৳৪.৯০)</button>
+    </div>
+
+    <div class="card" style="border: 2px dashed var(--p);">
+        <p style="margin:0;">আপনার রেফার কোড:</p>
+        <h3 id="display-ref" style="color:var(--p); margin:5px 0;">---</h3>
+        <small>প্রতি রেফারে ১০ টাকা বোনাস!</small>
+    </div>
+
+    <div class="card">
+        <h3>টাকা উত্তোলন (Withdraw)</h3>
+        <select id="w-method">
+            <option value="bKash">বিকাশ</option>
+            <option value="Nagad">নগদ</option>
+        </select>
+        <input id="w-amt" type="number" placeholder="পরিমাণ (মিনিমাম ৫০)">
+        <button class="btn" style="background:#28a745" onclick="withdraw()">উইথড্র রিকোয়েস্ট</button>
+    </div>
+
+    <div class="card">
+        <h3 style="text-align: left;">পেমেন্ট হিস্ট্রি</h3>
+        <div id="w-history">কোনো রেকর্ড নেই</div>
+    </div>
+
+    <button onclick="logout()" style="background:#444; width:50%; margin:20px auto; display:block;" class="btn">লগআউট</button>
+</div>
+
 <script>
-    // Firebase Config (আগেরটাই থাকবে)
+    // Firebase Configuration
     const firebaseConfig = {
         apiKey: "AIzaSyAdF9umElHCNQcclyWRkKVFXyNSqXS3FIM",
         authDomain: "free-income-48f88.firebaseapp.com",
@@ -58,42 +102,111 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function togglePass() {
-        let x = document.getElementById("r-ps");
-        x.type = x.type === "password" ? "text" : "password";
+    // Global User State
+    let user = localStorage.getItem('userPhone');
+
+    // Registration
+    function signup() {
+        let n = document.getElementById('r-name').value;
+        let p = document.getElementById('r-ph').value;
+        let s = document.getElementById('r-ps').value;
+        let r = document.getElementById('r-ref').value;
+
+        if(n && p.length >= 11 && s.length >= 6) {
+            db.ref('users/'+p).once('value', snap => {
+                if(snap.exists()) return alert("এই নম্বর দিয়ে একাউন্ট আছে!");
+                
+                db.ref('users/'+p).set({ name: n, pass: s, balance: 0, withdraws: [] }).then(() => {
+                    if(r && r !== p) {
+                        db.ref('users/'+r).once('value', rs => {
+                            if(rs.exists()) {
+                                let nb = (rs.val().balance || 0) + 10;
+                                db.ref('users/'+r).update({ balance: nb });
+                            }
+                        });
+                    }
+                    alert("সফল! লগইন করুন।"); toggleBox();
+                });
+            });
+        } else alert("সব তথ্য সঠিকভাবে দিন");
     }
 
-    function signup() {
-        let name = document.getElementById('r-name').value;
-        let ph = document.getElementById('r-ph').value;
-        let ps = document.getElementById('r-ps').value;
-        let agree = document.getElementById('agree').checked;
+    // Login
+    function login() {
+        let p = document.getElementById('l-ph').value;
+        let s = document.getElementById('l-ps').value;
+        db.ref('users/'+p).once('value', snap => {
+            if(snap.exists() && snap.val().pass === s) {
+                localStorage.setItem('userPhone', p);
+                location.reload();
+            } else alert("ভুল তথ্য!");
+        });
+    }
 
-        // ভ্যালিডেশন চেক
-        if(!name || ph.length < 11 || ps.length < 6) {
-            return alert("অনুগ্রহ করে সব তথ্য সঠিকভাবে দিন (নম্বর ১১ এবং পাসওয়ার্ড ৬ ডিজিট হতে হবে)");
-        }
-        if(!agree) return alert("নিয়মাবলীতে টিক দিন");
-
-        // চেক করা হচ্ছে আগে থেকে একাউন্ট আছে কি না
-        db.ref('users/' + ph).once('value', snap => {
-            if(snap.exists()) {
-                alert("এই নম্বরে অলরেডি একাউন্ট আছে!");
-            } else {
-                db.ref('users/' + ph).set({
-                    name: name,
-                    phone: ph,
-                    pass: ps,
-                    balance: 0,
-                    joinDate: new Date().toLocaleDateString(),
-                    status: "Active"
-                }).then(() => {
-                    alert("রেজিস্ট্রেশন সফল হয়েছে!");
-                    // লগইন পেজে পাঠানোর কোড এখানে দিতে পারো
-                });
+    // Load User Data
+    if(user) {
+        document.getElementById('auth-page').style.display = 'none';
+        document.getElementById('app-page').style.display = 'block';
+        document.getElementById('display-ref').innerText = user;
+        
+        db.ref('users/'+user).on('value', snap => {
+            let d = snap.val();
+            if(d) {
+                document.getElementById('display-name').innerText = d.name;
+                document.getElementById('display-bal').innerText = "৳ " + (d.balance || 0).toFixed(2);
+                renderHistory(d.withdraws);
             }
         });
     }
+
+    // Ads and Income
+    function watchAd() {
+        window.open("https://www.effectivegatecpm.com/w6arakqmr0?key=cfe5b3bf60645ca848c57f56fdc4be23", "_blank");
+        let btn = document.getElementById('adBtn'), txt = document.getElementById('timer-txt');
+        btn.disabled = true;
+        let sec = 5;
+        let itv = setInterval(() => {
+            sec--;
+            txt.innerText = sec + "s";
+            if(sec <= 0) {
+                clearInterval(itv);
+                txt.innerText = "Ready";
+                db.ref('users/'+user).once('value', s => {
+                    db.ref('users/'+user).update({ balance: s.val().balance + 4.90 });
+                    alert("৳৪.৯০ যোগ হয়েছে!");
+                    btn.disabled = false;
+                });
+            }
+        }, 1000);
+    }
+
+    // Withdraw
+    function withdraw() {
+        let amt = parseFloat(document.getElementById('w-amt').value);
+        let met = document.getElementById('w-method').value;
+        db.ref('users/'+user).once('value', s => {
+            let d = s.val();
+            if(amt >= 50 && d.balance >= amt) {
+                let wl = d.withdraws || [];
+                wl.push({ amt: amt, met: met, status: "Pending", date: new Date().toLocaleDateString() });
+                db.ref('users/'+user).update({ balance: d.balance - amt, withdraws: wl });
+                alert("উইথড্র রিকোয়েস্ট সফল!");
+            } else alert("ব্যালেন্স কম বা ভুল পরিমাণ");
+        });
+    }
+
+    // UI Helpers
+    function renderHistory(l) {
+        let h = document.getElementById('w-history');
+        if(!l) return;
+        h.innerHTML = l.reverse().map(i => `<div class="history-item"><span>${i.met} (${i.date})</span><span class="pending">৳${i.amt} - ${i.status}</span></div>`).join('');
+    }
+    function toggleBox() {
+        let l = document.getElementById('login-box'), r = document.getElementById('reg-box');
+        l.style.display = l.style.display === 'none' ? 'block' : 'none';
+        r.style.display = r.style.display === 'none' ? 'block' : 'none';
+    }
+    function logout() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
