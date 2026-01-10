@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Earn Pro - Secure</title>
+    <title>Quick Earn Pro - Fix</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -13,8 +13,6 @@
         .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .btn { width: 90%; padding: 12px; border: none; border-radius: 10px; background: var(--p); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
         input, select { width: 85%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
-        #prog-bg { width: 90%; background: #eee; height: 10px; border-radius: 5px; margin: 10px auto; display: none; }
-        #prog-fill { height: 100%; background: var(--p); width: 0%; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -25,26 +23,23 @@
 </div>
 
 <div class="card">
-    <p style="margin:0; color:#636e72;">আপনার ব্যালেন্স</p>
+    <p style="margin:0; color:#636e72;">বর্তমান ব্যালেন্স</p>
     <h1 id="mainBal" style="color:var(--p); margin:10px 0;">৳ ০.০০</h1>
-    <div id="prog-bg"><div id="prog-fill"></div></div>
     <button id="adBtn" class="btn" onclick="startTask()">বিজ্ঞাপন দেখুন (৳৪.৯০)</button>
 </div>
 
 <div class="card">
-    <h3>টাকা উত্তোলন (Withdraw)</h3>
-    <p style="color:red; font-size:12px;">মিনিমাম উইথড্র ১৫০ টাকা</p>
+    <h3>উইথড্র (মিনিমাম ১৫০)</h3>
     <select id="method">
         <option value="bKash">বিকাশ</option>
         <option value="Nagad">নগদ</option>
     </select>
     <input id="wNum" type="number" placeholder="আপনার নম্বর">
-    <input id="wAmt" type="number" placeholder="পরিমাণ (১৫০+)">
+    <input id="wAmt" type="number" placeholder="পরিমাণ">
     <button class="btn" style="background:#2ecc71;" onclick="withdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
 </div>
 
 <script>
-    // Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyAdF9umElHCNQcclyWRkKVFXyNSqXS3FIM",
         authDomain: "free-income-48f88.firebaseapp.com",
@@ -60,22 +55,12 @@
 
     function startTask() {
         window.open("https://www.effectivegatecpm.com/w6arakqmr0?key=cfe5b3bf60645ca848c57f56fdc4be23", "_blank");
-        let btn = document.getElementById('adBtn'), pBg = document.getElementById('prog-bg'), pFill = document.getElementById('prog-fill');
-        btn.disabled = true; pBg.style.display = 'block';
-        
-        let count = 0, total = 7;
-        let itv = setInterval(() => {
-            count++;
-            pFill.style.width = (count/total)*100 + "%";
-            if(count >= total) {
-                clearInterval(itv);
-                balance += 4.90;
-                localStorage.setItem('my_balance', balance);
-                updateUI();
-                alert("৳৪.৯০ যোগ হয়েছে!");
-                btn.disabled = false; pBg.style.display = 'none'; pFill.style.width = "0%";
-            }
-        }, 1000);
+        setTimeout(() => {
+            balance += 4.90;
+            localStorage.setItem('my_balance', balance);
+            updateUI();
+            alert("৳৪.৯০ যোগ হয়েছে!");
+        }, 5000);
     }
 
     function withdraw() {
@@ -83,8 +68,14 @@
         let amt = parseFloat(document.getElementById('wAmt').value);
         let met = document.getElementById('method').value;
 
-        if(num.length >= 11 && amt >= 150) { // এখানে ১৫০ টাকার শর্ত সেট করা হয়েছে
+        if(num.length >= 11 && amt >= 150) {
             if(balance >= amt) {
+                // আগে ব্যালেন্স কাটা হবে
+                balance -= amt;
+                localStorage.setItem('my_balance', balance);
+                updateUI();
+
+                // তারপর ডাটাবেজে পাঠানো হবে
                 let reqId = Date.now();
                 db.ref('withdraws/' + reqId).set({
                     number: num,
@@ -93,15 +84,16 @@
                     status: "Pending",
                     time: new Date().toLocaleString()
                 }).then(() => {
-                    balance -= amt;
+                    alert("উইথড্র সফল! ব্যালেন্স থেকে টাকা কেটে নেওয়া হয়েছে।");
+                }).catch(e => {
+                    // যদি ডাটাবেজে ব্যর্থ হয় তবে টাকা ফেরত দেওয়া হবে
+                    balance += amt;
                     localStorage.setItem('my_balance', balance);
                     updateUI();
-                    alert("উইথড্র রিকোয়েস্ট সফল! ১৫০+ টাকার পেমেন্ট ২৪ ঘণ্টায় পাবেন।");
+                    alert("Error: " + e.message);
                 });
-            } else alert("পর্যাপ্ত ব্যালেন্স নেই!");
-        } else {
-            alert("সঠিক নম্বর দিন এবং মনে রাখবেন মিনিমাম ১৫০ টাকা উত্তোলন করা যাবে।");
-        }
+            } else alert("পর্যাপ্ত টাকা নেই!");
+        } else alert("সঠিক তথ্য দিন (মিনিমাম ১৫০ টাকা)।");
     }
 
     function updateUI() {
