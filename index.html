@@ -7,13 +7,13 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --p: #E2136E; --bg: #f0f2f5; }
-        body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; text-align: center; }
-        .nav { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; font-weight: bold; }
-        .card { background: white; margin: 15px; padding: 25px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: var(--p); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:disabled { background: #ccc; }
+        :root { --p: #E2136E; --bg: #f4f4f4; }
+        body { font-family: Arial; background: var(--bg); margin: 0; text-align: center; }
+        .nav { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; }
+        .card { background: white; margin: 20px; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; }
+        button { background: var(--p); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        button:disabled { background: #ccc; }
     </style>
 </head>
 <body>
@@ -21,20 +21,18 @@
 <div id="auth">
     <div class="card">
         <h2 style="color:var(--p)">Earn Pro Max</h2>
-        <div id="reg-box">
-            <h3>নতুন একাউন্ট</h3>
-            <input id="r-name" type="text" placeholder="আপনার নাম">
-            <input id="r-ph" type="number" placeholder="ফোন নম্বর (১১ ডিজিট)">
-            <input id="r-ps" type="password" placeholder="পাসওয়ার্ড (৬ ডিজিট)">
-            <button class="btn" onclick="signup()">রেজিস্ট্রেশন করুন</button>
-            <p onclick="toggle()" style="cursor:pointer; color:var(--p); margin-top:15px;">ইতোমধ্যে একাউন্ট আছে? লগইন</p>
-        </div>
-        <div id="login-box" style="display:none">
-            <h3>লগইন করুন</h3>
+        <div id="login-box">
             <input id="l-ph" type="number" placeholder="ফোন নম্বর">
             <input id="l-ps" type="password" placeholder="পাসওয়ার্ড">
-            <button class="btn" onclick="login()">প্রবেশ করুন</button>
+            <button onclick="login()">লগইন</button>
             <p onclick="toggle()" style="cursor:pointer; color:var(--p); margin-top:15px;">নতুন একাউন্ট খুলুন</p>
+        </div>
+        <div id="reg-box" style="display:none">
+            <input id="r-name" type="text" placeholder="আপনার নাম">
+            <input id="r-ph" type="number" placeholder="ফোন নম্বর">
+            <input id="r-ps" type="password" placeholder="পাসওয়ার্ড">
+            <button onclick="signup()">রেজিস্ট্রেশন করুন</button>
+            <p onclick="toggle()" style="cursor:pointer; color:var(--p); margin-top:15px;">লগইন করুন</p>
         </div>
     </div>
 </div>
@@ -42,17 +40,13 @@
 <div id="app" style="display:none">
     <div class="nav">
         <span id="uName">ইউজার</span>
-        <span id="uBal" style="background:rgba(255,255,255,0.2); padding:2px 10px; border-radius:15px;">৳ ০.০০</span>
+        <span id="uBal">৳ ০.০০</span>
     </div>
     <div class="card">
-        <h3 id="status">বিজ্ঞাপন দেখে আয় করুন</h3>
-        <button id="adBtn" class="btn" onclick="watchAd()">টাস্ক শুরু করুন (৳৪.৯০)</button>
+        <h3 id="timer">বিজ্ঞাপন দেখে আয় করুন</h3>
+        <button id="adBtn" onclick="watchAd()">টাস্ক শুরু (৳৪.৯০)</button>
     </div>
-    <div class="card" style="border: 2px dashed var(--p);">
-        <p>আপনার রেফার কোড:</p>
-        <b id="uRef" style="color:var(--p); font-size: 20px;">---</b>
-    </div>
-    <button onclick="logout()" style="background:#444; width:50%; margin-top:20px;" class="btn">লগআউট</button>
+    <button onclick="logout()" style="background:#444; width:50%; margin:20px auto; color:white; padding:10px; border-radius:10px; border:none; display:block;">লগআউট</button>
 </div>
 
 <script>
@@ -68,15 +62,11 @@
 
     function signup() {
         let n = document.getElementById('r-name').value, p = document.getElementById('r-ph').value, s = document.getElementById('r-ps').value;
-        if(n && p.length >= 11 && s.length >= 6) {
-            db.ref('users/'+p).once('value', snap => {
-                if(snap.exists()) return alert("এই নম্বর দিয়ে একাউন্ট আছে!");
-                db.ref('users/'+p).set({name: n, pass: s, balance: 0}).then(() => {
-                    alert("রেজিস্ট্রেশন সফল! লগইন করুন।");
-                    toggle();
-                });
-            });
-        } else alert("সঠিক তথ্য দিন!");
+        if(n && p && s) {
+            db.ref('users/'+p).set({name: n, pass: s, balance: 0}).then(() => {
+                alert("সফল! এবার লগইন করুন।"); toggle();
+            }).catch(e => alert("Error: Firebase Rules চেক করুন!"));
+        } else alert("সব তথ্য দিন!");
     }
 
     function login() {
@@ -85,7 +75,7 @@
             if(snap.exists() && snap.val().pass == s) {
                 localStorage.setItem('user', p);
                 location.reload();
-            } else alert("ভুল তথ্য!");
+            } else alert("ভুল তথ্য বা একাউন্ট নেই!");
         });
     }
 
@@ -93,42 +83,36 @@
     if(user) {
         document.getElementById('auth').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        document.getElementById('uRef').innerText = user;
         db.ref('users/'+user).on('value', snap => {
             let d = snap.val();
             if(d) {
                 document.getElementById('uName').innerText = d.name;
-                document.getElementById('uBal').innerText = "৳ " + d.balance.toFixed(2);
+                document.getElementById('uBal').innerText = "৳ " + (d.balance || 0).toFixed(2);
             }
         });
     }
 
     function watchAd() {
         window.open("https://www.effectivegatecpm.com/w6arakqmr0?key=cfe5b3bf60645ca848c57f56fdc4be23", "_blank");
-        let btn = document.getElementById('adBtn'), st = document.getElementById('status');
+        let btn = document.getElementById('adBtn'), t = document.getElementById('timer');
         btn.disabled = true;
-        let count = 5;
+        let c = 5;
         let itv = setInterval(() => {
-            count--;
-            st.innerText = "অপেক্ষা করুন: " + count + "s";
-            if(count <= 0) {
+            c--; t.innerText = "অপেক্ষা করুন: " + c + "s";
+            if(c <= 0) {
                 clearInterval(itv);
                 db.ref('users/'+user).once('value', s => {
-                    let newBal = (s.val().balance || 0) + 4.90;
-                    db.ref('users/'+user).update({balance: newBal}).then(() => {
-                        alert("৳৪.৯০ যোগ হয়েছে!");
-                        btn.disabled = false;
-                        st.innerText = "বিজ্ঞাপন দেখে আয় করুন";
+                    db.ref('users/'+user).update({balance: (s.val().balance || 0) + 4.90}).then(() => {
+                        alert("৳৪.৯০ যোগ হয়েছে!"); btn.disabled = false; t.innerText = "বিজ্ঞাপন দেখে আয় করুন";
                     });
                 });
             }
         }, 1000);
     }
-
     function toggle() {
-        let r = document.getElementById('reg-box'), l = document.getElementById('login-box');
-        r.style.display = r.style.display === 'none' ? 'block' : 'none';
-        l.style.display = l.style.display === 'none' ? 'block' : 'none';
+        let l = document.getElementById('login-box'), r = document.getElementById('reg-box');
+        l.style.display = l.style.display == 'none' ? 'block' : 'none';
+        r.style.display = r.style.display == 'none' ? 'block' : 'none';
     }
     function logout() { localStorage.clear(); location.reload(); }
 </script>
