@@ -3,19 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Earn Pro - Fix</title>
+    <title>Quick Earn Pro - Maintenance</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root { --p: #0984e3; --bg: #f4f7f6; }
         body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; text-align: center; }
+        
+        /* নোটিশ স্টাইল */
+        .notice { background: #ff7675; color: white; padding: 10px; font-size: 14px; font-weight: bold; border-bottom: 2px solid #d63031; }
+        
         .nav { background: white; padding: 15px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .btn { width: 90%; padding: 12px; border: none; border-radius: 10px; background: var(--p); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
         input, select { width: 85%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
     </style>
 </head>
 <body>
+
+<div class="notice">
+    ⚠️ জরুরি নোটিশ: সাইটের আপডেট কাজ চলছে। ১২/০১/২০২৬ পর্যন্ত কেউ কোনো কাজ না করার জন্য অনুরোধ করা হলো।
+</div>
 
 <div class="nav">
     <b style="color: var(--p);">Quick Earn Pro</b>
@@ -25,7 +34,7 @@
 <div class="card">
     <p style="margin:0; color:#636e72;">বর্তমান ব্যালেন্স</p>
     <h1 id="mainBal" style="color:var(--p); margin:10px 0;">৳ ০.০০</h1>
-    <button id="adBtn" class="btn" onclick="startTask()">বিজ্ঞাপন দেখুন (৳৪.৯০)</button>
+    <button id="adBtn" class="btn" style="background:#d63031;" disabled>আপডেট চলছে (কাজ বন্ধ)</button>
 </div>
 
 <div class="card">
@@ -53,16 +62,6 @@
     let balance = parseFloat(localStorage.getItem('my_balance')) || 0;
     updateUI();
 
-    function startTask() {
-        window.open("https://www.effectivegatecpm.com/w6arakqmr0?key=cfe5b3bf60645ca848c57f56fdc4be23", "_blank");
-        setTimeout(() => {
-            balance += 4.90;
-            localStorage.setItem('my_balance', balance);
-            updateUI();
-            alert("৳৪.৯০ যোগ হয়েছে!");
-        }, 5000);
-    }
-
     function withdraw() {
         let num = document.getElementById('wNum').value;
         let amt = parseFloat(document.getElementById('wAmt').value);
@@ -70,12 +69,10 @@
 
         if(num.length >= 11 && amt >= 150) {
             if(balance >= amt) {
-                // আগে ব্যালেন্স কাটা হবে
                 balance -= amt;
                 localStorage.setItem('my_balance', balance);
                 updateUI();
 
-                // তারপর ডাটাবেজে পাঠানো হবে
                 let reqId = Date.now();
                 db.ref('withdraws/' + reqId).set({
                     number: num,
@@ -86,11 +83,10 @@
                 }).then(() => {
                     alert("উইথড্র সফল! ব্যালেন্স থেকে টাকা কেটে নেওয়া হয়েছে।");
                 }).catch(e => {
-                    // যদি ডাটাবেজে ব্যর্থ হয় তবে টাকা ফেরত দেওয়া হবে
                     balance += amt;
                     localStorage.setItem('my_balance', balance);
                     updateUI();
-                    alert("Error: " + e.message);
+                    alert("ডাটাবেজ এরর! Rules চেক করুন।");
                 });
             } else alert("পর্যাপ্ত টাকা নেই!");
         } else alert("সঠিক তথ্য দিন (মিনিমাম ১৫০ টাকা)।");
