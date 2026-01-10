@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earn Pro Max - Secure Reg</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --p: #E2136E; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Arial; background: var(--bg); margin: 0; }
+        .card { background: white; margin: 20px; padding: 25px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
+        .input-group { position: relative; width: 100%; margin: 10px 0; }
+        input { width: 90%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; }
+        .toggle-pass { position: absolute; right: 25px; top: 15px; cursor: pointer; color: #888; }
+        button { background: var(--p); color: white; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .terms { font-size: 12px; color: #666; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="auth">
+    <div class="card" id="reg-box">
+        <h2 style="color: var(--p);">একাউন্ট তৈরি করুন</h2>
+        
+        <div class="input-group">
+            <input id="r-name" type="text" placeholder="পূর্ণ নাম">
+        </div>
+        
+        <div class="input-group">
+            <input id="r-ph" type="number" placeholder="সঠিক ফোন নম্বর (১১ ডিজিট)">
+        </div>
+        
+        <div class="input-group">
+            <input id="r-ps" type="password" placeholder="পাসওয়ার্ড (কমপক্ষে ৬ ডিজিট)">
+            <i class="fas fa-eye toggle-pass" onclick="togglePass()"></i>
+        </div>
+
+        <div class="terms">
+            <input type="checkbox" id="agree" style="width: auto;"> আমি সব নিয়ম মেনে নিচ্ছি
+        </div>
+
+        <button onclick="signup()">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+        <p style="font-size: 14px;">ইতোমধ্যে একাউন্ট আছে? <a href="#" style="color: var(--p);">লগইন</a></p>
+    </div>
+</div>
+
+<script>
+    // Firebase Config (আগেরটাই থাকবে)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAdF9umElHCNQcclyWRkKVFXyNSqXS3FIM",
+        authDomain: "free-income-48f88.firebaseapp.com",
+        projectId: "free-income-48f88",
+        databaseURL: "https://free-income-48f88-default-rtdb.firebaseio.com/",
+        appId: "1:559465076876:web:93d3aa1f898d062053c3a9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function togglePass() {
+        let x = document.getElementById("r-ps");
+        x.type = x.type === "password" ? "text" : "password";
+    }
+
+    function signup() {
+        let name = document.getElementById('r-name').value;
+        let ph = document.getElementById('r-ph').value;
+        let ps = document.getElementById('r-ps').value;
+        let agree = document.getElementById('agree').checked;
+
+        // ভ্যালিডেশন চেক
+        if(!name || ph.length < 11 || ps.length < 6) {
+            return alert("অনুগ্রহ করে সব তথ্য সঠিকভাবে দিন (নম্বর ১১ এবং পাসওয়ার্ড ৬ ডিজিট হতে হবে)");
+        }
+        if(!agree) return alert("নিয়মাবলীতে টিক দিন");
+
+        // চেক করা হচ্ছে আগে থেকে একাউন্ট আছে কি না
+        db.ref('users/' + ph).once('value', snap => {
+            if(snap.exists()) {
+                alert("এই নম্বরে অলরেডি একাউন্ট আছে!");
+            } else {
+                db.ref('users/' + ph).set({
+                    name: name,
+                    phone: ph,
+                    pass: ps,
+                    balance: 0,
+                    joinDate: new Date().toLocaleDateString(),
+                    status: "Active"
+                }).then(() => {
+                    alert("রেজিস্ট্রেশন সফল হয়েছে!");
+                    // লগইন পেজে পাঠানোর কোড এখানে দিতে পারো
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>
