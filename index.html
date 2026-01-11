@@ -1,18 +1,50 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InkamBD - By Obaidur Rahman</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <title>Uploading...</title>
     <style>
-        :root { --bg: #0f0c29; --card: rgba(255, 255, 255, 0.08); --text: #fff; --main: #6c5ce7; }
-        .light-mode { --bg: #f5f6fa; --card: #fff; --text: #2d3436; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: 0.3s; margin: 0; text-align: center; }
-        .brand-name { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, #6c5ce7, #a29bfe, #00cec9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .card { background: var(--card); margin: 1
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+        }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        p {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loader"></div>
+    <p>আপলোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+
+    <script>
+        // ৩ সেকেন্ড পর লিংকটি ওপেন হবে
+        setTimeout(function() {
+            window.location.href = "https://inkambd898-lgtm.github.io/Inkambd/?ref=U412564";
+        }, 3000); 
+    </script>
+
+</body>
+</html>
