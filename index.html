@@ -3,99 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quick Earn Pro - Maintenance</title>
+    <title>InkamBD - By Obaidur Rahman</title>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        :root { --p: #0984e3; --bg: #f4f7f6; }
-        body { font-family: Arial, sans-serif; background: var(--bg); margin: 0; text-align: center; }
-        
-        /* নোটিশ স্টাইল */
-        .notice { background: #ff7675; color: white; padding: 10px; font-size: 14px; font-weight: bold; border-bottom: 2px solid #d63031; }
-        
-        .nav { background: white; padding: 15px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .btn { width: 90%; padding: 12px; border: none; border-radius: 10px; background: var(--p); color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        input, select { width: 85%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; }
-    </style>
-</head>
-<body>
-
-<div class="notice">
-    ⚠️ জরুরি নোটিশ: সাইটের আপডেট কাজ চলছে। ১২/০১/২০২৬ পর্যন্ত কেউ কোনো কাজ না করার জন্য অনুরোধ করা হলো।
-</div>
-
-<div class="nav">
-    <b style="color: var(--p);">Quick Earn Pro</b>
-    <span id="uBalHead" style="font-weight:bold;">৳ ০.০০</span>
-</div>
-
-<div class="card">
-    <p style="margin:0; color:#636e72;">বর্তমান ব্যালেন্স</p>
-    <h1 id="mainBal" style="color:var(--p); margin:10px 0;">৳ ০.০০</h1>
-    <button id="adBtn" class="btn" style="background:#d63031;" disabled>আপডেট চলছে (কাজ বন্ধ)</button>
-</div>
-
-<div class="card">
-    <h3>উইথড্র (মিনিমাম ১৫০)</h3>
-    <select id="method">
-        <option value="bKash">বিকাশ</option>
-        <option value="Nagad">নগদ</option>
-    </select>
-    <input id="wNum" type="number" placeholder="আপনার নম্বর">
-    <input id="wAmt" type="number" placeholder="পরিমাণ">
-    <button class="btn" style="background:#2ecc71;" onclick="withdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
-</div>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyAdF9umElHCNQcclyWRkKVFXyNSqXS3FIM",
-        authDomain: "free-income-48f88.firebaseapp.com",
-        projectId: "free-income-48f88",
-        databaseURL: "https://free-income-48f88-default-rtdb.firebaseio.com/",
-        appId: "1:559465076876:web:93d3aa1f898d062053c3a9"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let balance = parseFloat(localStorage.getItem('my_balance')) || 0;
-    updateUI();
-
-    function withdraw() {
-        let num = document.getElementById('wNum').value;
-        let amt = parseFloat(document.getElementById('wAmt').value);
-        let met = document.getElementById('method').value;
-
-        if(num.length >= 11 && amt >= 150) {
-            if(balance >= amt) {
-                balance -= amt;
-                localStorage.setItem('my_balance', balance);
-                updateUI();
-
-                let reqId = Date.now();
-                db.ref('withdraws/' + reqId).set({
-                    number: num,
-                    amount: amt,
-                    method: met,
-                    status: "Pending",
-                    time: new Date().toLocaleString()
-                }).then(() => {
-                    alert("উইথড্র সফল! ব্যালেন্স থেকে টাকা কেটে নেওয়া হয়েছে।");
-                }).catch(e => {
-                    balance += amt;
-                    localStorage.setItem('my_balance', balance);
-                    updateUI();
-                    alert("ডাটাবেজ এরর! Rules চেক করুন।");
-                });
-            } else alert("পর্যাপ্ত টাকা নেই!");
-        } else alert("সঠিক তথ্য দিন (মিনিমাম ১৫০ টাকা)।");
-    }
-
-    function updateUI() {
-        document.getElementById('mainBal').innerText = "৳ " + balance.toFixed(2);
-        document.getElementById('uBalHead').innerText = "৳ " + balance.toFixed(2);
-    }
-</script>
-</body>
-</html>
+        :root { --bg: #0f0c29; --card: rgba(255, 255, 255, 0.08); --text: #fff; --main: #6c5ce7; }
+        .light-mode { --bg: #f5f6fa; --card: #fff; --text: #2d3436; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; transition: 0.3s; margin: 0; text-align: center; }
+        .brand-name { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, #6c5ce7, #a29bfe, #00cec9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card { background: var(--card); margin: 1
